@@ -1,26 +1,58 @@
-// TODO: імпортуй потрібні типи з ./types
-// import type { BookId, Genre, LoanStatus } from "./types";
+import type { BookId, Genre, LoanStatus } from "./types";
+import { LoanStatus as LoanStatusEnum } from "./types";
+
+interface BookOptions {
+  id: BookId;
+  title: string;
+  author: string;
+  year: number;
+  genre: Genre;
+}
 
 export class Book {
-  // TODO: додай типи до властивостей
-  id;
-  title;
-  author;
-  year;
-  genre;
+  id: BookId;
+  title: string;
+  author: string;
+  year: number;
+  genre: Genre;
 
-  status;
-  borrowedBy;
+  private status: LoanStatus;
+  private borrowedBy: string | null;
 
-  // TODO: реалізуй конструктор з параметром opts
-  constructor(opts) {}
+  constructor(opts: BookOptions) {
+    this.id = opts.id;
+    this.title = opts.title;
+    this.author = opts.author;
+    this.year = opts.year;
+    this.genre = opts.genre;
+    this.status = LoanStatusEnum.Available;
+    this.borrowedBy = null;
+  }
 
-  // TODO: методи відповідно до ТЗ
-  getStatus() {}
+  getStatus(): LoanStatus {
+    return this.status;
+  }
 
-  markBorrowed(personName) {}
+  markBorrowed(personName: string): void {
+    if (this.status === LoanStatusEnum.Borrowed) {
+      throw new Error(`Already borrowed by ${this.borrowedBy}`);
+    }
+    this.status = LoanStatusEnum.Borrowed;
+    this.borrowedBy = personName;
+  }
 
-  markReturned() {}
+  markReturned(): void {
+    if (this.status === LoanStatusEnum.Available) {
+      throw new Error("Already available");
+    }
+    this.status = LoanStatusEnum.Available;
+    this.borrowedBy = null;
+  }
 
-  getInfo() {}
+  getInfo(): string {
+    if (this.status === LoanStatusEnum.Available) {
+      return `${this.title} — ${this.author} (${this.year}), ${this.genre} [Available]`;
+    }
+    return `${this.title} — ${this.author} (${this.year}), ${this.genre} [Borrowed by ${this.borrowedBy}]`;
+  }
 }
